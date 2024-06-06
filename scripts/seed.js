@@ -9,8 +9,13 @@ const bcrypt = require('bcrypt');
 
 async function seedUsers(client) {
   try {
+    // ここでuuid-ossp拡張機能を作成しています
+    // uuid-oospとは、PostgreSQLでUUIDを生成するための拡張機能です
+    // uuidとは、Universally Unique Identifierの略で、一意の識別子を生成するための仕様です
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
     // Create the "users" table if it doesn't exist
+
+    // ここでusersテーブルを作成しています
     const createTable = await client.sql`
       CREATE TABLE IF NOT EXISTS users (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -23,6 +28,7 @@ async function seedUsers(client) {
     console.log(`Created "users" table`);
 
     // Insert data into the "users" table
+    // ここでusersテーブルにデータを挿入しています
     const insertedUsers = await Promise.all(
       users.map(async (user) => {
         const hashedPassword = await bcrypt.hash(user.password, 10);
@@ -37,6 +43,7 @@ async function seedUsers(client) {
     console.log(`Seeded ${insertedUsers.length} users`);
 
     return {
+      // ここでcreateTableとusersを返しています
       createTable,
       users: insertedUsers,
     };
